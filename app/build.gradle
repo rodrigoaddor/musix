@@ -1,0 +1,61 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.4.30'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'de.undercouch.download' version '4.1.1'
+    id 'net.minecrell.plugin-yml.bukkit' version '0.3.0'
+}
+
+group 'dev.rodrick'
+version plugin_version
+
+bukkit {
+    // See https://github.com/Minecrell/plugin-yml other options
+
+    // Change name and version in gradle.properties
+    name = plugin_name
+    version = plugin_version
+    author = 'Rodrigo Addor <rodrigotladdor@gmail.com>'
+    website = 'http://github.com/rodrigoaddor/kotlin-paper-plugin-template'
+
+    main = 'dev.rodrick.kotlinpaperplugintemplate.ExamplePlugin'
+    apiVersion = '1.16'
+}
+
+repositories {
+    mavenCentral()
+    maven { url = "https://papermc.io/repo/repository/maven-public/" }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    api "com.destroystokyo.paper:paper-api:$minecraft_version-$paperapi_version"
+}
+
+shadowJar {
+    archiveBaseName.set(plugin_name)
+    archiveClassifier.set('')
+}
+
+task downloadServer(type: Download) {
+    src "https://papermc.io/api/v1/paper/$minecraft_version/latest/download"
+    dest "$rootDir/server/paper.jar"
+    onlyIfModified true
+}
+
+task copyPlugin(type: Copy) {
+    dependsOn('shadowJar')
+    from shadowJar.archiveFile
+    into "$rootDir/server/plugins"
+    rename '(.+)-\\d+.\\d+', '$1'
+
+}
+
+task runServer(type: JavaExec) {
+    dependsOn('downloadServer')
+    dependsOn('copyPlugin')
+    standardInput = System.in
+    classpath = files("$rootDir/server/paper.jar")
+    workingDir = "$rootDir/server"
+    maxHeapSize '3G'
+    args 'nogui'
+}
