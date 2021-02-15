@@ -15,20 +15,25 @@ bukkit {
     name = plugin_name
     version = plugin_version
     author = 'Rodrigo Addor <rodrigotladdor@gmail.com>'
-    website = 'http://github.com/rodrigoaddor/kotlin-paper-plugin-template'
+    website = 'https://github.com/rodrigoaddor/musix'
 
-    main = 'dev.rodrick.kotlinpaperplugintemplate.ExamplePlugin'
+    main = 'dev.rodrick.musix.MusixPlugin'
     apiVersion = '1.16'
 }
 
 repositories {
     mavenCentral()
-    maven { url = "https://papermc.io/repo/repository/maven-public/" }
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url = 'https://repo.codemc.org/repository/maven-public/' }
+    maven { url = "https://raw.githubusercontent.com/JorelAli/CommandAPI/mvn-repo/" }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    api "com.destroystokyo.paper:paper-api:$minecraft_version-$paperapi_version"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+    api "org.spigotmc:spigot-api:$minecraft_version-$spigot_version"
+    implementation 'dev.jorel:commandapi-shade:5.8'
+    implementation 'de.tr7zw:item-nbt-api-plugin:2.7.1'
 }
 
 shadowJar {
@@ -47,7 +52,6 @@ task copyPlugin(type: Copy) {
     from shadowJar.archiveFile
     into "$rootDir/server/plugins"
     rename '(.+)-\\d+.\\d+', '$1'
-
 }
 
 task runServer(type: JavaExec) {
